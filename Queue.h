@@ -60,6 +60,10 @@ public:
 		return top;
 	}
 
+	T getTopData() const {
+		return top->data;
+	}
+
 
 	void enqueue(T dataItem) {
 		qItem<T>* newItem = new qItem<T>(dataItem);

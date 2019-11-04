@@ -12,28 +12,33 @@ class Player {
 public:
 	int number;
 	int position;
-	int score;
-	Stack<int> diceRoll;
+	RollStack diceRoll;
 
-	Player(): score(0) {
+	Player() {
 		position = 0;
 		//position.y = -1;
 	}
 
-	Player(int Number) : number(Number), score(0) {
+	Player(int Number) : number(Number) {
 		position = 0;
 
 		//position.x = -1;
 		//position.y = -1;
 	}
+
+	int setPosition(int pos) {
+		this->position = pos;
+		return this->position;
+	}
 };
 
 class Game {
 	Map* gameMap;
-	Queue<Player> Players;
 	Stack <int> diceRollStack;
 
-public:
+public:	
+	Queue<Player> Players;
+
 	Game(string mapLocation, int players, int rows=10, int cols=10) {
 		vector<string> LoadHere;
 		readMap(LoadHere);
@@ -79,27 +84,40 @@ public:
 		return gameMap->positions.getNode(index-1);
 	}
 
-	void BringOnBoard() {
-		Players.getTop()->data;
+	int WhoseTurn() {
+		return Players.getTop()->data.number;
 	}
 
-	int TraverseBoard(int position, RollStack &rollThese) {
+
+	int TraverseBoard(int PlayerPosition, RollStack& rollThese) {
 		rollThese.Display();
 		int sum = rollThese.returnSum();
 		rollThese.Display();
 		
-		if (sum + position > 100) {
+		if (sum + PlayerPosition > 100) {
 			return 100;
 		}
 		
 		gameMap->positions.moveCursorToHead();
 		cout<<"At head..." << (gameMap->positions.getCursorData()) << endl;
 
-		gameMap->positions.moveCursorXTimes(position);
+		gameMap->positions.moveCursorXTimes(PlayerPosition);
 		cout << "At starting..." << (gameMap->positions.getCursorData()) << endl;
 
-		gameMap->positions.moveCursorXTimes(sum-1);
+		gameMap->positions.moveCursorXTimes(sum+1);
 		cout << "At ending..." << (gameMap->positions.getCursorData()) << endl;
+
+		if (gameMap->positions.getCursorSpecialData()[0] == 'L') {
+			cout << "Landed on a ladder!" << endl;
+			gameMap->positions.MoveCursorUpUntilNull();
+			cout << "Moved up the ladder!" << endl;
+		}
+		if (gameMap->positions.getCursorSpecialData()[0] == 'S') {
+			cout << "Landed on a snake!" << endl;
+			gameMap->positions.MoveCursorDownUntilNull();
+			cout << "Moved down the snake!" << endl;
+		}
+
 		return gameMap->positions.getCursorData();
 
 
@@ -116,21 +134,40 @@ public:
 		return rand() % 6 + 1;
 	}
 
-	void RollDice(int diceVal=-1, int sixcount=0) {
+	Player GetTopPlayer() {
+		return Players.getTop()->data;
+	}
+
+	Player & GetTopPlayerReference() {
+		return Players.getTop()->data;
+	}
+
+	bool RollDice(int diceVal=-1, int sixcount=0) {
 	
 	if (diceVal == 6) {
 		if (Players.getTop()->data.position == 0) {
 			Players.getTop()->data.position++;
+			cout << "Welcome to the board!" << endl;
 			nextTurn();
+			return false;
 		}
 		else{
-			Players.getTop()->data.diceRoll.push(diceVal);
+			Players.getTop()->data.diceRoll.push_roll(diceVal);
+			return true;
 			//RollDice(-1, sixcount + 1);
 		}
 	}
-	else if (diceVal == 3) {
-		Players.reverse();
+	else if (Players.getTop()->data.position != 0) {
+		if (diceVal % 3 == 0) {
+			Players.getTop()->data.diceRoll.push_roll(diceVal);
+			Players.reverse();
+			return false;
+		}
+		else
+			Players.getTop()->data.diceRoll.push_roll(diceVal);
+		return true;
 	}
+	return true;
 }
 
 

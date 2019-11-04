@@ -25,6 +25,20 @@ public:
 		top = nullptr;
 	}
 
+	int searchDoubleStack(string toFind) {
+		int index = 0;
+		if (isEmpty())
+			return -1;
+		while (top->prevNode) {
+			if (this->top->data.top->data->data == toFind)
+				return index;
+
+			index++;
+		}
+		return -1;
+	}
+
+
 	void push(T dataItem) {
 		Item<T>* newItem = new Item<T>(dataItem);
 		newItem->prevNode = top;
@@ -94,7 +108,7 @@ public:
 struct Roll {
 	Roll* prevNode;
 	int data;
-	Roll() {
+	Roll():data(0) {
 		prevNode = nullptr;
 	}
 
@@ -114,10 +128,10 @@ public:
 		top = nullptr;
 	}
 
-	RollStack(const RollStack& toCopy) {
-		//push_roll();
+	//RollStack(const RollStack& toCopy) {
+	//	//push_roll();
 
-	}
+	//}
 
 	void push_roll(string dataItem) {
 		Roll* newItem = new Roll(stoi(dataItem));

@@ -49,12 +49,30 @@ public:
 		return head == nullptr;
 	}
 
-	void insertAtHead(const string& newDataItem, int number = -1) {
+	Tile* insertAtHead(const string& newDataItem, int number = -1) {
 		Tile* newNode = new Tile (newDataItem, number);
 		newNode->next = nullptr;
 		head = newNode;
 		cout << "Pointing cursor to head!" << endl;
 		cursor = head;
+		return cursor;
+	}
+
+
+	void MoveCursorUpUntilNull() {
+		while (cursor->up) {
+			cursor = cursor->up;
+		}
+	}
+
+	void MoveCursorDownUntilNull() {
+		while (cursor->down) {
+			cursor = cursor->down;
+		}
+	}
+
+	void returnAddress() {
+
 	}
 
 	void setUpAtEnd(const string& newDataItem, int number = -1) {
@@ -72,11 +90,10 @@ public:
 			cursor->previous = prev;
 	}
 
-	void insert(const string& newDataItem, int number=-1) {
+	Tile* insert(const string& newDataItem, int number=-1) {
 
 		if (isEmpty()) {
-			insertAtHead(newDataItem, number);
-			return;
+			return insertAtHead(newDataItem, number);
 		}
 		else {
 			Tile* newNode = new Tile (newDataItem, number);
@@ -87,6 +104,7 @@ public:
 			}
 			cursor->next = newNode;
 			cursor = newNode;
+			return cursor;
 		}
 	}
 
@@ -271,9 +289,13 @@ public:
 
 	bool moveCursorXTimes(int index) {
 		cout << "Index is " << index << endl;
+		//cout << "Data on cursor is " << cursor->data << endl;
+		//cout << "Data on cursor->next is " << cursor->next->data << endl;
 		if (!isEmpty()) {
 			cout << "Entered condition " << index << endl;
-			while ((cursor->next != nullptr && cursor->up != nullptr) || index!=0) {
+			while ((cursor->next != nullptr && cursor->up != nullptr || index>1)) {
+				if (index <= 1)
+					break;
 				if (cursor->next == nullptr) {
 					if (cursor->up == nullptr) {
 						break;
@@ -284,6 +306,7 @@ public:
 				else
 					cursor = cursor->next;
 				cout << "Iterated " << index << " times!" << endl;
+
 				index--;
 			}
 			return true;
@@ -531,8 +554,8 @@ public:
 	void Display() {
 		Tile* displaycursor = head;
 		cursor = head;
-		char option;
-		cin >> option;
+		//char option;
+		//cin >> option;
 		cout << "The Linked List is..." << endl;
 		if (isEmpty()) {
 			cout << "Empty!" << endl;
@@ -556,7 +579,7 @@ public:
 			}
 		}
 		cout << " }" << endl;
-		cin >> option;
+		//cin >> option;
 	}
 
 	bool clear() {
